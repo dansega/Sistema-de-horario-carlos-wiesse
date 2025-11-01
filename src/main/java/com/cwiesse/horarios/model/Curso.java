@@ -156,6 +156,4 @@ public class Curso implements Serializable {
     public int hashCode() {
         return Objects.hash(codigo);
     }
-
-sout  print 
-        }
+ }
