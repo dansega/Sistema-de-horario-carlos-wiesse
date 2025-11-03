@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Docentes - Sistema Horarios</title>
+    <title>Aulas - Sistema Horarios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 </head>
@@ -29,19 +29,19 @@
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2><i class="bi bi-person-badge"></i> Gestión de Docentes</h2>
-                <p class="text-muted">Total: ${totalDocentes} docentes</p>
-            
-                <!-- creacion de boton para NUEVO DOCENTE y EXPORTAR EXCEL -->
+                <h2><i class="bi bi-door-open"></i> Gestión de Aulas</h2>
+                <p class="text-muted">Total: ${totalAulas} aulas</p>
             </div>
-            <a href="${pageContext.request.contextPath}/docentes?action=nuevo" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> Nuevo Docente
-    </a>
-    <a href="${pageContext.request.contextPath}/docentes/exportar" 
-       class="btn btn-success ms-2"
-       title="Exportar a Excel">
-        <i class="bi bi-file-earmark-excel"></i> Exportar Excel
-    </a>
+            <div>
+                <a href="${pageContext.request.contextPath}/aulas?action=nuevo" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Nueva Aula
+                </a>
+                <a href="${pageContext.request.contextPath}/aulas/exportar" 
+                   class="btn btn-success ms-2"
+                   title="Exportar a Excel">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                </a>
+            </div>
         </div>
         
         <c:if test="${not empty sessionScope.mensaje}">
@@ -65,37 +65,39 @@
                     <table class="table table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th>DNI</th>
-                                <th>Nombre Completo</th>
-                                <th>Email</th>
-                                <th>Teléfono</th>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Capacidad</th>
+                                <th>Piso</th>
+                                <th>Edificio</th>
                                 <th>Estado</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach items="${docentes}" var="docente">
+                            <c:forEach items="${aulas}" var="aula">
                                 <tr>
-                                    <td><strong>${docente.dni}</strong></td>
-                                    <td>${docente.nombreCompleto}</td>
-                                    <td>${docente.email}</td>
-                                    <td>${docente.telefono}</td>
+                                    <td><strong>${aula.codigo}</strong></td>
+                                    <td>${aula.nombre}</td>
+                                    <td><i class="bi bi-people"></i> ${aula.capacidad} alumnos</td>
+                                    <td>Piso ${aula.piso}</td>
+                                    <td>${aula.edificio}</td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${docente.estado}">
-                                                <span class="badge bg-success">Activo</span>
+                                            <c:when test="${aula.estado}">
+                                                <span class="badge bg-success">Activa</span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="badge bg-secondary">Inactivo</span>
+                                                <span class="badge bg-secondary">Inactiva</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td class="text-center">
-                                        <a href="${pageContext.request.contextPath}/docentes?action=editar&id=${docente.id}" 
+                                        <a href="${pageContext.request.contextPath}/aulas?action=editar&id=${aula.id}" 
                                            class="btn btn-sm btn-warning" title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button onclick="confirmarEliminacion(${docente.id}, '${docente.nombreCompleto}')" 
+                                        <button onclick="confirmarEliminacion(${aula.id}, '${aula.codigo}')" 
                                                 class="btn btn-sm btn-danger" title="Eliminar">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -103,10 +105,10 @@
                                 </tr>
                             </c:forEach>
                             
-                            <c:if test="${empty docentes}">
+                            <c:if test="${empty aulas}">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">
-                                        No hay docentes registrados
+                                    <td colspan="7" class="text-center text-muted">
+                                        No hay aulas registradas
                                     </td>
                                 </tr>
                             </c:if>
@@ -125,11 +127,11 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function confirmarEliminacion(id, nombre) {
-            if (confirm('¿Está seguro de eliminar al docente ' + nombre + '?')) {
+        function confirmarEliminacion(id, codigo) {
+            if (confirm('¿Está seguro de eliminar el aula ' + codigo + '?')) {
                 var form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '${pageContext.request.contextPath}/docentes';
+                form.action = '${pageContext.request.contextPath}/aulas';
                 
                 var actionInput = document.createElement('input');
                 actionInput.type = 'hidden';

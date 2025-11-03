@@ -44,18 +44,19 @@
                 </div>
             </div>
             
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
+          <!-- creacion de AULAS en el dashboard -->
+        <div class="col-md-4">
+                 <div class="card text-center">
+                        <div class="card-body">
                         <i class="bi bi-door-open fs-1 text-success"></i>
                         <h5 class="card-title mt-3">Aulas</h5>
                         <p class="card-text">Gestionar aulas y espacios</p>
-                        <a href="#" class="btn btn-success disabled">
-                            Próximamente
-                        </a>
-                    </div>
-                </div>
-            </div>
+                        <a href="${pageContext.request.contextPath}/aulas?action=listar" class="btn btn-success">
+                             Ir a Aulas
+                         </a>
+                          </div>
+                  </div>
+         </div>
             
             <div class="col-md-4">
                 <div class="card text-center">

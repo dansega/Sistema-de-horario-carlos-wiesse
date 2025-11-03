@@ -81,12 +81,7 @@
             </button>
         </form>
         
-        <div class="text-center mt-3">
-            <small class="text-muted">
-                Demo: <strong>admin</strong> / <strong>admin123</strong><br>
-                o <strong>jperez</strong> / <strong>doc123</strong>
-            </small>
-        </div>
+        
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
