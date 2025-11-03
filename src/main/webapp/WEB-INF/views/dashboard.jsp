@@ -65,7 +65,11 @@
                         <h5 class="card-title mt-3">Horarios</h5>
                         <p class="card-text">Gestionar horarios escolares</p>
                         <a href="#" class="btn btn-danger disabled">
-                            Próximamente
+                            
+                           <!--- creacoin de horario -->
+                           <a href="${pageContext.request.contextPath}/horarios?action=listar" class="btn btn-danger">
+                             Ir a Horarios
+                            </a>
                         </a>
                     </div>
                 </div>
