@@ -55,8 +55,8 @@ public class DBConnection {
             
             if (input == null) {
                 logger.error("No se encontró application.properties");
-                // Configuración por defecto
-                this.url = "jdbc:mysql://localhost:3306/horarios_cwiesse?useSSL=false&serverTimezone=America/Lima";
+                // Configuración por defecto con UTF-8
+                this.url = "jdbc:mysql://localhost:3306/horarios_cwiesse?useSSL=false&serverTimezone=America/Lima&characterEncoding=UTF-8&useUnicode=true";
                 this.username = "root";
                 this.password = "";
                 this.driver = "com.mysql.cj.jdbc.Driver";

@@ -25,6 +25,9 @@ public class Docente implements Serializable {
     private String telefono;
     private boolean estado;
     private LocalDateTime fechaRegistro;
+    private Integer usuarioId;
+    private String rolUsuario; // Rol del usuario asociado (ADMIN o DOCENTE)
+    private Usuario usuario; // ✅ NUEVO: Objeto Usuario completo
     
     // Constructor vacío
     public Docente() {
@@ -128,6 +131,35 @@ public class Docente implements Serializable {
         this.fechaRegistro = fechaRegistro;
     }
     
+    public Integer getUsuarioId() {
+        return usuarioId;
+    }
+    
+    public void setUsuarioId(Integer usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+    
+    public String getRolUsuario() {
+        return rolUsuario;
+    }
+    
+    public void setRolUsuario(String rolUsuario) {
+        this.rolUsuario = rolUsuario;
+    }
+    
+    // ✅ NUEVO: Getter y Setter para objeto Usuario completo
+    public Usuario getUsuario() {
+        return usuario;
+    }
+    
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+        // Sincronizar usuarioId si se establece un usuario
+        if (usuario != null) {
+            this.usuarioId = usuario.getId();
+        }
+    }
+    
     // Método para obtener nombre completo
     public String getNombreCompleto() {
         return nombre + " " + apellidoPaterno + " " + apellidoMaterno;
@@ -142,6 +174,9 @@ public class Docente implements Serializable {
                 ", nombre='" + getNombreCompleto() + '\'' +
                 ", email='" + email + '\'' +
                 ", estado=" + estado +
+                ", usuarioId=" + usuarioId +
+                ", rolUsuario='" + rolUsuario + '\'' +
+                ", usuario=" + (usuario != null ? usuario.getUsername() : "null") +
                 '}';
     }
     

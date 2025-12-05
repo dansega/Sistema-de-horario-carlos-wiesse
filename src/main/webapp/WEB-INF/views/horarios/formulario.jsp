@@ -81,7 +81,7 @@
                                         <c:forEach items="${cursos}" var="cur">
                                             <option value="${cur.id}" 
                                                     ${horario.cursoId == cur.id ? 'selected' : ''}>
-                                                ${cur.nombre} - ${cur.nivel} ${cur.grado}°
+                                                ${cur.nombre}
                                             </option>
                                         </c:forEach>
                                     </select>

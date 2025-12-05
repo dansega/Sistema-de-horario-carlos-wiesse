@@ -22,7 +22,6 @@ public class UsuarioDaoImpl implements UsuarioDao {
     private static final Logger logger = LoggerFactory.getLogger(UsuarioDaoImpl.class);
     private final DBConnection dbConnection;
     
-    // Constructor
     public UsuarioDaoImpl() {
         this.dbConnection = DBConnection.getInstance();
     }
@@ -127,7 +126,6 @@ public class UsuarioDaoImpl implements UsuarioDao {
             int filasAfectadas = stmt.executeUpdate();
             
             if (filasAfectadas > 0) {
-                // Obtener el ID generado
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
                     usuario.setId(rs.getInt(1));
@@ -231,9 +229,117 @@ public class UsuarioDaoImpl implements UsuarioDao {
         }
     }
     
-    /**
-     * Mapea un ResultSet a un objeto Usuario
-     */
+    @Override
+    public boolean desactivar(Integer id) {
+        String sql = "UPDATE usuario SET activo = 0 WHERE id = ?";
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            
+            int filasAfectadas = stmt.executeUpdate();
+            
+            if (filasAfectadas > 0) {
+                logger.info("Usuario desactivado con ID: {}", id);
+                return true;
+            }
+            
+            return false;
+            
+        } catch (SQLException e) {
+            logger.error("Error al desactivar usuario: {}", e.getMessage());
+            return false;
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
+    
+    @Override
+    public boolean activar(Integer id) {
+        String sql = "UPDATE usuario SET activo = 1 WHERE id = ?";
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            
+            int filasAfectadas = stmt.executeUpdate();
+            
+            if (filasAfectadas > 0) {
+                logger.info("Usuario activado con ID: {}", id);
+                return true;
+            }
+            
+            return false;
+            
+        } catch (SQLException e) {
+            logger.error("Error al activar usuario: {}", e.getMessage());
+            return false;
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
+    
+    @Override
+    public Optional<Usuario> buscarPorUsernameIncluirInactivos(String username) {
+        String sql = "SELECT * FROM usuario WHERE username = ?";
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Usuario usuario = mapResultSetToUsuario(rs);
+                logger.debug("Usuario encontrado (incluyendo inactivos): {}", username);
+                return Optional.of(usuario);
+            }
+            
+            logger.debug("Usuario no encontrado: {}", username);
+            return Optional.empty();
+            
+        } catch (SQLException e) {
+            logger.error("Error al buscar usuario por username: {}", e.getMessage());
+            return Optional.empty();
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
+    
+    @Override
+    public boolean actualizarPassword(Integer id, String nuevoPasswordHash) {
+        String sql = "UPDATE usuario SET password_hash = ? WHERE id = ?";
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, nuevoPasswordHash);
+            stmt.setInt(2, id);
+            
+            int filasAfectadas = stmt.executeUpdate();
+            
+            if (filasAfectadas > 0) {
+                logger.info("Contraseña actualizada para usuario ID: {}", id);
+                return true;
+            }
+            
+            return false;
+            
+        } catch (SQLException e) {
+            logger.error("Error al actualizar contraseña: {}", e.getMessage());
+            return false;
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
+    
     private Usuario mapResultSetToUsuario(ResultSet rs) throws SQLException {
         Usuario usuario = new Usuario();
         usuario.setId(rs.getInt("id"));

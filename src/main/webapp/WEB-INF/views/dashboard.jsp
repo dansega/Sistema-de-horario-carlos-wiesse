@@ -31,45 +31,69 @@
         <p class="text-muted">Bienvenido al sistema de gestión de horarios</p>
         
         <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="bi bi-person-badge fs-1 text-primary"></i>
-                        <h5 class="card-title mt-3">Docentes</h5>
-                        <p class="card-text">Gestionar docentes del colegio</p>
-                        <a href="${pageContext.request.contextPath}/docentes?action=listar" class="btn btn-primary">
-                            Ir a Docentes
+            <!-- Docentes -->
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-person-badge" style="font-size: 3rem; color: #0d6efd;"></i>
+                        </div>
+                        <h5 class="card-title">Docentes</h5>
+                        <p class="card-text text-muted">Gestionar docentes del colegio</p>
+                        <a href="${pageContext.request.contextPath}/docentes?action=listar" 
+                           class="btn btn-primary">
+                            <i class="bi bi-arrow-right-circle"></i> Ver Docentes
                         </a>
                     </div>
                 </div>
             </div>
             
-          <!-- creacion de AULAS en el dashboard -->
-        <div class="col-md-4">
-                 <div class="card text-center">
-                        <div class="card-body">
-                        <i class="bi bi-door-open fs-1 text-success"></i>
-                        <h5 class="card-title mt-3">Aulas</h5>
-                        <p class="card-text">Gestionar aulas y espacios</p>
-                        <a href="${pageContext.request.contextPath}/aulas?action=listar" class="btn btn-success">
-                             Ir a Aulas
-                         </a>
-                          </div>
-                  </div>
-         </div>
+            <!-- Aulas -->
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-door-open" style="font-size: 3rem; color: #198754;"></i>
+                        </div>
+                        <h5 class="card-title">Aulas</h5>
+                        <p class="card-text text-muted">Gestionar aulas y espacios</p>
+                        <a href="${pageContext.request.contextPath}/aulas?action=listar" 
+                           class="btn btn-success">
+                            <i class="bi bi-arrow-right-circle"></i> Ver Aulas
+                        </a>
+                    </div>
+                </div>
+            </div>
             
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="bi bi-calendar3 fs-1 text-danger"></i>
-                        <h5 class="card-title mt-3">Horarios</h5>
-                        <p class="card-text">Gestionar horarios escolares</p>
-                        <a href="#" class="btn btn-danger disabled">
-                            
-                           <!--- creacoin de horario -->
-                           <a href="${pageContext.request.contextPath}/horarios?action=listar" class="btn btn-danger">
-                             Ir a Horarios
-                            </a>
+            <!-- Cursos (NUEVO) -->
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-book" style="font-size: 3rem; color: #fd7e14;"></i>
+                        </div>
+                        <h5 class="card-title">Cursos</h5>
+                        <p class="card-text text-muted">Gestionar cursos del colegio</p>
+                        <a href="${pageContext.request.contextPath}/cursos?action=listar" 
+                           class="btn btn-warning">
+                            <i class="bi bi-arrow-right-circle"></i> Ver Cursos
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Horarios -->
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-calendar3" style="font-size: 3rem; color: #dc3545;"></i>
+                        </div>
+                        <h5 class="card-title">Horarios</h5>
+                        <p class="card-text text-muted">Gestionar horarios escolares</p>
+                        <a href="${pageContext.request.contextPath}/horarios?action=listar" 
+                           class="btn btn-danger">
+                            <i class="bi bi-arrow-right-circle"></i> Ver Horarios
                         </a>
                     </div>
                 </div>

@@ -31,17 +31,17 @@
             <div>
                 <h2><i class="bi bi-person-badge"></i> Gestión de Docentes</h2>
                 <p class="text-muted">Total: ${totalDocentes} docentes</p>
-            
-                <!-- creacion de boton para NUEVO DOCENTE y EXPORTAR EXCEL -->
             </div>
-            <a href="${pageContext.request.contextPath}/docentes?action=nuevo" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> Nuevo Docente
-    </a>
-    <a href="${pageContext.request.contextPath}/docentes/exportar" 
-       class="btn btn-success ms-2"
-       title="Exportar a Excel">
-        <i class="bi bi-file-earmark-excel"></i> Exportar Excel
-    </a>
+            <div>
+                <a href="${pageContext.request.contextPath}/docentes?action=nuevo" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nuevo Docente
+                </a>
+                <a href="${pageContext.request.contextPath}/docentes/exportar" 
+                   class="btn btn-success ms-2"
+                   title="Exportar a Excel">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                </a>
+            </div>
         </div>
         
         <c:if test="${not empty sessionScope.mensaje}">
@@ -70,6 +70,8 @@
                                 <th>Email</th>
                                 <th>Teléfono</th>
                                 <th>Estado</th>
+                                <th>Acceso</th>
+                                <th>Rol</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -78,8 +80,26 @@
                                 <tr>
                                     <td><strong>${docente.dni}</strong></td>
                                     <td>${docente.nombreCompleto}</td>
-                                    <td>${docente.email}</td>
-                                    <td>${docente.telefono}</td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${not empty docente.email}">
+                                                <i class="bi bi-envelope"></i> ${docente.email}
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-muted">-</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${not empty docente.telefono}">
+                                                <i class="bi bi-telephone"></i> ${docente.telefono}
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-muted">-</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${docente.estado}">
@@ -87,6 +107,41 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="badge bg-secondary">Inactivo</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${docente.usuarioId != null}">
+                                                <span class="badge bg-success">
+                                                    <i class="bi bi-check-circle"></i> Sí
+                                                </span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge bg-secondary">
+                                                    <i class="bi bi-x-circle"></i> No
+                                                </span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${docente.usuarioId != null}">
+                                                <c:choose>
+                                                    <c:when test="${docente.rolUsuario == 'ADMIN'}">
+                                                        <span class="badge bg-danger">
+                                                            <i class="bi bi-shield-fill-check"></i> Admin
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge bg-info">
+                                                            <i class="bi bi-person"></i> Docente
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-muted">-</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -105,7 +160,7 @@
                             
                             <c:if test="${empty docentes}">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">
+                                    <td colspan="8" class="text-center text-muted">
                                         No hay docentes registrados
                                     </td>
                                 </tr>

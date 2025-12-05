@@ -18,9 +18,9 @@ public interface CursoDao {
     Optional<Curso> buscarPorId(Integer id);
     
     /**
-     * Busca un curso por su código
+     * Busca un curso por su nombre
      */
-    Optional<Curso> buscarPorCodigo(String codigo);
+    Optional<Curso> buscarPorNombre(String nombre);
     
     /**
      * Lista todos los cursos
@@ -43,12 +43,17 @@ public interface CursoDao {
     boolean actualizar(Curso curso);
     
     /**
-     * Elimina un curso por su ID
+     * Elimina un curso por su ID (soft delete)
      */
     boolean eliminar(Integer id);
     
     /**
-     * Verifica si existe un curso con ese código
+     * Verifica si existe un curso con ese nombre
      */
-    boolean existeCodigo(String codigo);
+    boolean existeNombre(String nombre);
+    
+    /**
+     * Verifica si existe otro curso con el mismo nombre (para edición)
+     */
+    boolean existeNombreExceptoId(String nombre, Integer id);
 }

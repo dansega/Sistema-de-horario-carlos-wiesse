@@ -60,4 +60,27 @@ public interface UsuarioDao {
      * @return true si existe, false si no
      */
     boolean existeUsername(String username);
+    
+    /**
+     * Desactiva un usuario (activo = 0)
+     */
+    boolean desactivar(Integer id);
+    
+    /**
+     * Activa un usuario (activo = 1)
+     */
+    boolean activar(Integer id);
+    
+    /**
+     * Busca un usuario por username (incluye inactivos)
+     */
+    Optional<Usuario> buscarPorUsernameIncluirInactivos(String username);
+    
+    /**
+     * Actualiza solo la contraseña de un usuario
+     * @param id ID del usuario
+     * @param nuevoPasswordHash Nuevo hash de contraseña
+     * @return true si se actualizó correctamente, false si no
+     */
+    boolean actualizarPassword(Integer id, String nuevoPasswordHash);
 }

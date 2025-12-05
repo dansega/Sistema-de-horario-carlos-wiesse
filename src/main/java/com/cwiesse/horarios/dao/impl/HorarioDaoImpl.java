@@ -36,7 +36,7 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre, c.codigo as curso_codigo, c.nivel as curso_nivel, c.grado as curso_grado " +
+                    "c.nombre as curso_nombre " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
@@ -74,7 +74,7 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre, c.codigo as curso_codigo, c.nivel as curso_nivel, c.grado as curso_grado " +
+                    "c.nombre as curso_nombre " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
@@ -110,7 +110,7 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre, c.codigo as curso_codigo, c.nivel as curso_nivel, c.grado as curso_grado " +
+                    "c.nombre as curso_nombre " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
@@ -148,7 +148,7 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre, c.codigo as curso_codigo, c.nivel as curso_nivel, c.grado as curso_grado " +
+                    "c.nombre as curso_nombre " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
@@ -186,7 +186,7 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre, c.codigo as curso_codigo, c.nivel as curso_nivel, c.grado as curso_grado " +
+                    "c.nombre as curso_nombre " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
@@ -433,12 +433,13 @@ public class HorarioDaoImpl implements HorarioDao {
         horario.setDocenteId(rs.getInt("docente_id"));
         horario.setAulaId(rs.getInt("aula_id"));
         horario.setCursoId(rs.getInt("curso_id"));
-       String diaStr = rs.getString("dia");
+        
+        String diaStr = rs.getString("dia");
         horario.setDia(Horario.Dia.valueOf(diaStr));
         horario.setHoraInicio(rs.getTime("hora_inicio").toLocalTime());
         horario.setHoraFin(rs.getTime("hora_fin").toLocalTime());
         
-        // Crear objetos relacionados (para mostrar en vistas)
+        // Crear objeto Docente relacionado
         Docente docente = new Docente();
         docente.setId(rs.getInt("docente_id"));
         docente.setDni(rs.getString("docente_dni"));
@@ -447,6 +448,7 @@ public class HorarioDaoImpl implements HorarioDao {
         docente.setApellidoMaterno(rs.getString("docente_ap_materno"));
         horario.setDocente(docente);
         
+        // Crear objeto Aula relacionado
         Aula aula = new Aula();
         aula.setId(rs.getInt("aula_id"));
         aula.setCodigo(rs.getString("aula_codigo"));
@@ -454,13 +456,10 @@ public class HorarioDaoImpl implements HorarioDao {
         aula.setCapacidad(rs.getInt("aula_capacidad"));
         horario.setAula(aula);
         
+        // Crear objeto Curso relacionado (SIMPLIFICADO)
         Curso curso = new Curso();
         curso.setId(rs.getInt("curso_id"));
         curso.setNombre(rs.getString("curso_nombre"));
-        curso.setCodigo(rs.getString("curso_codigo"));
-        String nivelStr = rs.getString("curso_nivel");
-        curso.setNivel(Curso.Nivel.valueOf(nivelStr));
-        curso.setGrado(rs.getInt("curso_grado"));
         horario.setCurso(curso);
         
         return horario;

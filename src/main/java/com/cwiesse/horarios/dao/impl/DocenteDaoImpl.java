@@ -83,8 +83,38 @@ public class DocenteDaoImpl implements DocenteDao {
     }
     
     @Override
+    public Optional<Docente> buscarPorUsuarioId(Integer usuarioId) {
+        String sql = "SELECT * FROM docente WHERE usuario_id = ?";
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, usuarioId);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Docente docente = mapResultSetToDocente(rs);
+                logger.debug("Docente encontrado con usuario_id: {}", usuarioId);
+                return Optional.of(docente);
+            }
+            
+            return Optional.empty();
+            
+        } catch (SQLException e) {
+            logger.error("Error al buscar docente por usuario_id: {}", e.getMessage());
+            return Optional.empty();
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
+    
+    @Override
     public List<Docente> listarTodos() {
-        String sql = "SELECT * FROM docente ORDER BY apellido_paterno, apellido_materno, nombre";
+        String sql = "SELECT d.*, u.rol as rol_usuario FROM docente d " +
+                     "LEFT JOIN usuario u ON d.usuario_id = u.id " +
+                     "ORDER BY d.apellido_paterno, d.apellido_materno, d.nombre";
         List<Docente> docentes = new ArrayList<>();
         Connection conn = null;
         
@@ -94,7 +124,7 @@ public class DocenteDaoImpl implements DocenteDao {
             ResultSet rs = stmt.executeQuery(sql);
             
             while (rs.next()) {
-                docentes.add(mapResultSetToDocente(rs));
+                docentes.add(mapResultSetToDocenteConRol(rs));
             }
             
             logger.debug("Se encontraron {} docentes", docentes.size());
@@ -110,7 +140,10 @@ public class DocenteDaoImpl implements DocenteDao {
     
     @Override
     public List<Docente> listarActivos() {
-        String sql = "SELECT * FROM docente WHERE estado = 1 ORDER BY apellido_paterno, apellido_materno, nombre";
+        String sql = "SELECT d.*, u.rol as rol_usuario FROM docente d " +
+                     "LEFT JOIN usuario u ON d.usuario_id = u.id " +
+                     "WHERE d.estado = 1 " +
+                     "ORDER BY d.apellido_paterno, d.apellido_materno, d.nombre";
         List<Docente> docentes = new ArrayList<>();
         Connection conn = null;
         
@@ -120,7 +153,7 @@ public class DocenteDaoImpl implements DocenteDao {
             ResultSet rs = stmt.executeQuery(sql);
             
             while (rs.next()) {
-                docentes.add(mapResultSetToDocente(rs));
+                docentes.add(mapResultSetToDocenteConRol(rs));
             }
             
             logger.debug("Se encontraron {} docentes activos", docentes.size());
@@ -136,8 +169,8 @@ public class DocenteDaoImpl implements DocenteDao {
     
     @Override
     public boolean insertar(Docente docente) {
-        String sql = "INSERT INTO docente (dni, nombre, apellido_paterno, apellido_materno, email, telefono, estado) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO docente (dni, nombre, apellido_paterno, apellido_materno, email, telefono, estado, usuario_id) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         
         try {
@@ -151,6 +184,12 @@ public class DocenteDaoImpl implements DocenteDao {
             stmt.setString(5, docente.getEmail());
             stmt.setString(6, docente.getTelefono());
             stmt.setBoolean(7, docente.isEstado());
+            
+            if (docente.getUsuarioId() != null) {
+                stmt.setInt(8, docente.getUsuarioId());
+            } else {
+                stmt.setNull(8, java.sql.Types.INTEGER);
+            }
             
             int filasAfectadas = stmt.executeUpdate();
             
@@ -176,7 +215,7 @@ public class DocenteDaoImpl implements DocenteDao {
     @Override
     public boolean actualizar(Docente docente) {
         String sql = "UPDATE docente SET dni = ?, nombre = ?, apellido_paterno = ?, apellido_materno = ?, " +
-                     "email = ?, telefono = ?, estado = ? WHERE id = ?";
+                     "email = ?, telefono = ?, estado = ?, usuario_id = ? WHERE id = ?";
         Connection conn = null;
         
         try {
@@ -190,7 +229,15 @@ public class DocenteDaoImpl implements DocenteDao {
             stmt.setString(5, docente.getEmail());
             stmt.setString(6, docente.getTelefono());
             stmt.setBoolean(7, docente.isEstado());
-            stmt.setInt(8, docente.getId());
+            
+            // CRÍTICO: Manejar NULL correctamente
+            if (docente.getUsuarioId() != null) {
+                stmt.setInt(8, docente.getUsuarioId());
+            } else {
+                stmt.setNull(8, java.sql.Types.INTEGER);
+            }
+            
+            stmt.setInt(9, docente.getId());
             
             int filasAfectadas = stmt.executeUpdate();
             
@@ -202,7 +249,7 @@ public class DocenteDaoImpl implements DocenteDao {
             return false;
             
         } catch (SQLException e) {
-            logger.error("Error al actualizar docente: {}", e.getMessage());
+            logger.error("Error al actualizar docente: {}", e.getMessage(), e);
             return false;
         } finally {
             dbConnection.closeConnection(conn);
@@ -289,8 +336,62 @@ public class DocenteDaoImpl implements DocenteDao {
         }
     }
     
+    @Override
+    public boolean tieneUsuario(Integer docenteId) {
+        String sql = "SELECT COUNT(*) FROM docente WHERE id = ? AND usuario_id IS NOT NULL";
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, docenteId);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+            
+            return false;
+            
+        } catch (SQLException e) {
+            logger.error("Error al verificar si docente tiene usuario: {}", e.getMessage());
+            return false;
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
+    
+    @Override
+    public boolean usuarioActivo(Integer docenteId) {
+        String sql = "SELECT u.activo FROM docente d " +
+                     "INNER JOIN usuario u ON d.usuario_id = u.id " +
+                     "WHERE d.id = ?";
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, docenteId);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getBoolean("activo");
+            }
+            
+            return false;
+            
+        } catch (SQLException e) {
+            logger.error("Error al verificar si usuario está activo: {}", e.getMessage());
+            return false;
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
+    
     /**
-     * Mapea un ResultSet a un objeto Docente
+     * Mapea un ResultSet a un objeto Docente (sin rol)
      */
     private Docente mapResultSetToDocente(ResultSet rs) throws SQLException {
         Docente docente = new Docente();
@@ -303,6 +404,41 @@ public class DocenteDaoImpl implements DocenteDao {
         docente.setTelefono(rs.getString("telefono"));
         docente.setEstado(rs.getBoolean("estado"));
         docente.setFechaRegistro(rs.getTimestamp("fecha_registro").toLocalDateTime());
+        
+        int usuarioId = rs.getInt("usuario_id");
+        if (!rs.wasNull()) {
+            docente.setUsuarioId(usuarioId);
+        }
+        
+        return docente;
+    }
+    
+    /**
+     * Mapea un ResultSet a un objeto Docente (con rol del usuario)
+     */
+    private Docente mapResultSetToDocenteConRol(ResultSet rs) throws SQLException {
+        Docente docente = new Docente();
+        docente.setId(rs.getInt("id"));
+        docente.setDni(rs.getString("dni"));
+        docente.setNombre(rs.getString("nombre"));
+        docente.setApellidoPaterno(rs.getString("apellido_paterno"));
+        docente.setApellidoMaterno(rs.getString("apellido_materno"));
+        docente.setEmail(rs.getString("email"));
+        docente.setTelefono(rs.getString("telefono"));
+        docente.setEstado(rs.getBoolean("estado"));
+        docente.setFechaRegistro(rs.getTimestamp("fecha_registro").toLocalDateTime());
+        
+        int usuarioId = rs.getInt("usuario_id");
+        if (!rs.wasNull()) {
+            docente.setUsuarioId(usuarioId);
+        }
+        
+        // Obtener rol del usuario
+        String rolUsuario = rs.getString("rol_usuario");
+        if (rolUsuario != null) {
+            docente.setRolUsuario(rolUsuario);
+        }
+        
         return docente;
     }
 }

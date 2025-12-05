@@ -23,6 +23,11 @@ public interface DocenteDao {
     Optional<Docente> buscarPorDni(String dni);
     
     /**
+     * Busca un docente por su usuario_id
+     */
+    Optional<Docente> buscarPorUsuarioId(Integer usuarioId);
+    
+    /**
      * Lista todos los docentes activos
      */
     List<Docente> listarTodos();
@@ -56,4 +61,12 @@ public interface DocenteDao {
      * Verifica si existe un docente con ese DNI
      */
     boolean existeDni(String dni);
+    /**
+ * Verifica si existe un docente con acceso al sistema (usuario_id no nulo)
+ */
+boolean tieneUsuario(Integer docenteId);
+/**
+ * Verifica si el usuario del docente está activo
+ */
+boolean usuarioActivo(Integer docenteId);
 }

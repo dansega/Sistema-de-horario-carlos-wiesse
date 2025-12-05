@@ -55,27 +55,27 @@ public class CursoDaoImpl implements CursoDao {
     }
     
     @Override
-    public Optional<Curso> buscarPorCodigo(String codigo) {
-        String sql = "SELECT * FROM curso WHERE codigo = ?";
+    public Optional<Curso> buscarPorNombre(String nombre) {
+        String sql = "SELECT * FROM curso WHERE nombre = ?";
         Connection conn = null;
         
         try {
             conn = dbConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, codigo);
+            stmt.setString(1, nombre);
             
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
                 Curso curso = mapResultSetToCurso(rs);
-                logger.debug("Curso encontrado con código: {}", codigo);
+                logger.debug("Curso encontrado con nombre: {}", nombre);
                 return Optional.of(curso);
             }
             
             return Optional.empty();
             
         } catch (SQLException e) {
-            logger.error("Error al buscar curso por código: {}", e.getMessage());
+            logger.error("Error al buscar curso por nombre: {}", e.getMessage());
             return Optional.empty();
         } finally {
             dbConnection.closeConnection(conn);
@@ -84,7 +84,7 @@ public class CursoDaoImpl implements CursoDao {
     
     @Override
     public List<Curso> listarTodos() {
-        String sql = "SELECT * FROM curso ORDER BY nivel, grado, nombre";
+        String sql = "SELECT * FROM curso ORDER BY nombre";
         List<Curso> cursos = new ArrayList<>();
         Connection conn = null;
         
@@ -110,7 +110,7 @@ public class CursoDaoImpl implements CursoDao {
     
     @Override
     public List<Curso> listarActivos() {
-        String sql = "SELECT * FROM curso WHERE estado = 1 ORDER BY nivel, grado, nombre";
+        String sql = "SELECT * FROM curso WHERE estado = 1 ORDER BY nombre";
         List<Curso> cursos = new ArrayList<>();
         Connection conn = null;
         
@@ -136,21 +136,17 @@ public class CursoDaoImpl implements CursoDao {
     
     @Override
     public boolean insertar(Curso curso) {
-        String sql = "INSERT INTO curso (codigo, nombre, nivel, grado, horas_semanales, color, estado) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO curso (nombre, descripcion, horas_semanales, estado) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         
         try {
             conn = dbConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
-            stmt.setString(1, curso.getCodigo());
-            stmt.setString(2, curso.getNombre());
-            stmt.setString(3, curso.getNivel().name());
-            stmt.setInt(4, curso.getGrado());
-            stmt.setInt(5, curso.getHorasSemanales());
-            stmt.setString(6, curso.getColor());
-            stmt.setBoolean(7, curso.isEstado());
+            stmt.setString(1, curso.getNombre());
+            stmt.setString(2, curso.getDescripcion());
+            stmt.setInt(3, curso.getHorasSemanales());
+            stmt.setBoolean(4, curso.isEstado());
             
             int filasAfectadas = stmt.executeUpdate();
             
@@ -175,22 +171,18 @@ public class CursoDaoImpl implements CursoDao {
     
     @Override
     public boolean actualizar(Curso curso) {
-        String sql = "UPDATE curso SET codigo = ?, nombre = ?, nivel = ?, grado = ?, " +
-                     "horas_semanales = ?, color = ?, estado = ? WHERE id = ?";
+        String sql = "UPDATE curso SET nombre = ?, descripcion = ?, horas_semanales = ?, estado = ? WHERE id = ?";
         Connection conn = null;
         
         try {
             conn = dbConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             
-            stmt.setString(1, curso.getCodigo());
-            stmt.setString(2, curso.getNombre());
-            stmt.setString(3, curso.getNivel().name());
-            stmt.setInt(4, curso.getGrado());
-            stmt.setInt(5, curso.getHorasSemanales());
-            stmt.setString(6, curso.getColor());
-            stmt.setBoolean(7, curso.isEstado());
-            stmt.setInt(8, curso.getId());
+            stmt.setString(1, curso.getNombre());
+            stmt.setString(2, curso.getDescripcion());
+            stmt.setInt(3, curso.getHorasSemanales());
+            stmt.setBoolean(4, curso.isEstado());
+            stmt.setInt(5, curso.getId());
             
             int filasAfectadas = stmt.executeUpdate();
             
@@ -211,7 +203,8 @@ public class CursoDaoImpl implements CursoDao {
     
     @Override
     public boolean eliminar(Integer id) {
-        String sql = "DELETE FROM curso WHERE id = ?";
+        // Soft delete: cambiar estado a false
+        String sql = "UPDATE curso SET estado = 0 WHERE id = ?";
         Connection conn = null;
         
         try {
@@ -222,7 +215,7 @@ public class CursoDaoImpl implements CursoDao {
             int filasAfectadas = stmt.executeUpdate();
             
             if (filasAfectadas > 0) {
-                logger.info("Curso eliminado con ID: {}", id);
+                logger.info("Curso desactivado con ID: {}", id);
                 return true;
             }
             
@@ -237,14 +230,14 @@ public class CursoDaoImpl implements CursoDao {
     }
     
     @Override
-    public boolean existeCodigo(String codigo) {
-        String sql = "SELECT COUNT(*) FROM curso WHERE codigo = ?";
+    public boolean existeNombre(String nombre) {
+        String sql = "SELECT COUNT(*) FROM curso WHERE nombre = ?";
         Connection conn = null;
         
         try {
             conn = dbConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, codigo);
+            stmt.setString(1, nombre);
             
             ResultSet rs = stmt.executeQuery();
             
@@ -255,7 +248,34 @@ public class CursoDaoImpl implements CursoDao {
             return false;
             
         } catch (SQLException e) {
-            logger.error("Error al verificar existencia de código: {}", e.getMessage());
+            logger.error("Error al verificar existencia de nombre: {}", e.getMessage());
+            return false;
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
+    
+    @Override
+    public boolean existeNombreExceptoId(String nombre, Integer id) {
+        String sql = "SELECT COUNT(*) FROM curso WHERE nombre = ? AND id != ?";
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, nombre);
+            stmt.setInt(2, id);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+            
+            return false;
+            
+        } catch (SQLException e) {
+            logger.error("Error al verificar existencia de nombre exceptuando ID: {}", e.getMessage());
             return false;
         } finally {
             dbConnection.closeConnection(conn);
@@ -268,16 +288,16 @@ public class CursoDaoImpl implements CursoDao {
     private Curso mapResultSetToCurso(ResultSet rs) throws SQLException {
         Curso curso = new Curso();
         curso.setId(rs.getInt("id"));
-        curso.setCodigo(rs.getString("codigo"));
         curso.setNombre(rs.getString("nombre"));
-        
-        String nivelStr = rs.getString("nivel");
-        curso.setNivel(Curso.Nivel.valueOf(nivelStr));
-        
-        curso.setGrado(rs.getInt("grado"));
+        curso.setDescripcion(rs.getString("descripcion"));
         curso.setHorasSemanales(rs.getInt("horas_semanales"));
-        curso.setColor(rs.getString("color"));
         curso.setEstado(rs.getBoolean("estado"));
+        
+        // Mapear fecha_registro si existe
+        Timestamp timestamp = rs.getTimestamp("fecha_registro");
+        if (timestamp != null) {
+            curso.setFechaRegistro(timestamp.toLocalDateTime());
+        }
         
         return curso;
     }

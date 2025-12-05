@@ -89,8 +89,7 @@
                                         ${horario.docente.nombreCompleto}
                                     </td>
                                     <td>
-                                        <strong>${horario.curso.nombre}</strong><br>
-                                        <small class="text-muted">${horario.curso.nivel} - ${horario.curso.grado}° grado</small>
+                                        <strong>${horario.curso.nombre}</strong>
                                     </td>
                                     <td>
                                         <span class="badge bg-secondary">${horario.aula.codigo}</span>
