@@ -27,12 +27,12 @@
     </nav>
     
     <div class="container mt-5">
-        <h1><i class="bi bi-speedometer2"></i> Dashboard</h1>
-        <p class="text-muted">Bienvenido al sistema de gestión de horarios</p>
-        
-        <div class="row mt-4">
+    <h1 class="text-center"><i class="bi bi-speedometer2"></i> Dashboard Administrativo</h1>
+    <p class="text-muted text-center">Bienvenido al sistema de gestión de horarios - Colegio Carlos Wiesse</p>
+    
+    <div class="row mt-4 justify-content-center">
             <!-- Docentes -->
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body text-center">
                         <div class="mb-3">
@@ -41,7 +41,7 @@
                         <h5 class="card-title">Docentes</h5>
                         <p class="card-text text-muted">Gestionar docentes del colegio</p>
                         <a href="${pageContext.request.contextPath}/docentes?action=listar" 
-                           class="btn btn-primary">
+                           class="btn btn-primary btn-sm">
                             <i class="bi bi-arrow-right-circle"></i> Ver Docentes
                         </a>
                     </div>
@@ -49,7 +49,7 @@
             </div>
             
             <!-- Aulas -->
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body text-center">
                         <div class="mb-3">
@@ -58,15 +58,32 @@
                         <h5 class="card-title">Aulas</h5>
                         <p class="card-text text-muted">Gestionar aulas y espacios</p>
                         <a href="${pageContext.request.contextPath}/aulas?action=listar" 
-                           class="btn btn-success">
+                           class="btn btn-success btn-sm">
                             <i class="bi bi-arrow-right-circle"></i> Ver Aulas
                         </a>
                     </div>
                 </div>
             </div>
             
-            <!-- Cursos (NUEVO) -->
-            <div class="col-md-3 mb-4">
+            <!-- Grados -->
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-diagram-3" style="font-size: 3rem; color: #6f42c1;"></i>
+                        </div>
+                        <h5 class="card-title">Grados</h5>
+                        <p class="card-text text-muted">Gestionar grados y secciones</p>
+                        <a href="${pageContext.request.contextPath}/grados?action=listar" 
+                           class="btn btn-sm" style="background-color: #6f42c1; color: white;">
+                            <i class="bi bi-arrow-right-circle"></i> Ver Grados
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cursos -->
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body text-center">
                         <div class="mb-3">
@@ -75,7 +92,7 @@
                         <h5 class="card-title">Cursos</h5>
                         <p class="card-text text-muted">Gestionar cursos del colegio</p>
                         <a href="${pageContext.request.contextPath}/cursos?action=listar" 
-                           class="btn btn-warning">
+                           class="btn btn-warning btn-sm">
                             <i class="bi bi-arrow-right-circle"></i> Ver Cursos
                         </a>
                     </div>
@@ -83,7 +100,7 @@
             </div>
             
             <!-- Horarios -->
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body text-center">
                         <div class="mb-3">
@@ -92,7 +109,7 @@
                         <h5 class="card-title">Horarios</h5>
                         <p class="card-text text-muted">Gestionar horarios escolares</p>
                         <a href="${pageContext.request.contextPath}/horarios?action=listar" 
-                           class="btn btn-danger">
+                           class="btn btn-danger btn-sm">
                             <i class="bi bi-arrow-right-circle"></i> Ver Horarios
                         </a>
                     </div>

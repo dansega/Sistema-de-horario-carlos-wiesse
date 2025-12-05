@@ -69,6 +69,7 @@
                                 <th>Nombre Completo</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
+                                <th>Cursos que Dicta</th>
                                 <th>Estado</th>
                                 <th>Acceso</th>
                                 <th>Rol</th>
@@ -97,6 +98,19 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="text-muted">-</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${not empty docente.cursosQueDicta}">
+                                                <c:forEach var="curso" items="${docente.cursosQueDicta}" varStatus="status">
+                                                    <span class="badge bg-info text-dark">${curso}</span>
+                                                    <c:if test="${!status.last}"> </c:if>
+                                                </c:forEach>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-muted fst-italic">Sin cursos</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -160,7 +174,7 @@
                             
                             <c:if test="${empty docentes}">
                                 <tr>
-                                    <td colspan="8" class="text-center text-muted">
+                                    <td colspan="9" class="text-center text-muted">
                                         No hay docentes registrados
                                     </td>
                                 </tr>

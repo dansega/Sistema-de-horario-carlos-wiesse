@@ -5,6 +5,7 @@ import com.cwiesse.horarios.model.Aula;
 import com.cwiesse.horarios.model.Horario;
 import com.cwiesse.horarios.model.Curso;
 import org.apache.poi.ss.usermodel.*;
+import com.cwiesse.horarios.model.Grado;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 
 /**
  * Servicio para exportar datos a Excel usando Apache POI.
@@ -476,4 +478,85 @@ public class ExcelExportService {
         
         return style;
     }
+    /**
+ * Exporta una lista de grados a un archivo Excel (.xlsx)
+ * 
+ * @param grados Lista de grados a exportar
+ * @return ByteArrayOutputStream con el contenido del Excel
+ * @throws IOException Si hay error al crear el archivo
+ */
+public static ByteArrayOutputStream exportarGradosExcel(List<Grado> grados) throws IOException {
+    logger.info("Iniciando exportación de {} grados a Excel", grados.size());
+    
+    Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("Grados");
+    
+    CellStyle headerStyle = createHeaderStyle(workbook);
+    CellStyle dataStyle = createDataStyle(workbook);
+    
+    Row titleRow = sheet.createRow(0);
+    Cell titleCell = titleRow.createCell(0);
+    titleCell.setCellValue("REPORTE DE GRADOS/SECCIONES - COLEGIO CARLOS WIESSE");
+    CellStyle titleStyle = createTitleStyle(workbook);
+    titleCell.setCellStyle(titleStyle);
+    sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(0, 0, 0, 4));
+    
+    Row dateRow = sheet.createRow(1);
+    Cell dateCell = dateRow.createCell(0);
+    String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+    dateCell.setCellValue("Fecha de generación: " + fecha);
+    sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(1, 1, 0, 4));
+    
+    Row headerRow = sheet.createRow(3);
+    String[] headers = {"Nivel", "Grado", "Sección", "Aula Asignada", "Estado"};
+    
+    for (int i = 0; i < headers.length; i++) {
+        Cell cell = headerRow.createCell(i);
+        cell.setCellValue(headers[i]);
+        cell.setCellStyle(headerStyle);
+    }
+    
+    int rowNum = 4;
+    for (Grado grado : grados) {
+        Row row = sheet.createRow(rowNum++);
+        
+        Cell cell0 = row.createCell(0);
+        cell0.setCellValue(grado.getNivel().getNombre());
+        cell0.setCellStyle(dataStyle);
+        
+        Cell cell1 = row.createCell(1);
+        cell1.setCellValue(grado.getNumero() + "°");
+        cell1.setCellStyle(dataStyle);
+        
+        Cell cell2 = row.createCell(2);
+        cell2.setCellValue(grado.getSeccion());
+        cell2.setCellStyle(dataStyle);
+        
+        Cell cell3 = row.createCell(3);
+        if (grado.getAula() != null) {
+            cell3.setCellValue(grado.getAula().getCodigo() + 
+                              (grado.getAula().getNombre() != null ? " - " + grado.getAula().getNombre() : ""));
+        } else {
+            cell3.setCellValue("Sin asignar");
+        }
+        cell3.setCellStyle(dataStyle);
+        
+        Cell cell4 = row.createCell(4);
+        cell4.setCellValue(grado.isEstado() ? "Activo" : "Inactivo");
+        cell4.setCellStyle(dataStyle);
+    }
+    
+    for (int i = 0; i < headers.length; i++) {
+        sheet.autoSizeColumn(i);
+        sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000);
+    }
+    
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    workbook.write(outputStream);
+    workbook.close();
+    
+    logger.info("Excel de grados generado exitosamente con {} registros", grados.size());
+    
+    return outputStream;
+}
 }

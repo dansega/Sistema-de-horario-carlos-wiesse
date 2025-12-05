@@ -2,6 +2,7 @@ package com.cwiesse.horarios.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,7 +28,8 @@ public class Docente implements Serializable {
     private LocalDateTime fechaRegistro;
     private Integer usuarioId;
     private String rolUsuario; // Rol del usuario asociado (ADMIN o DOCENTE)
-    private Usuario usuario; // ✅ NUEVO: Objeto Usuario completo
+    private Usuario usuario; // Objeto Usuario completo
+    private List<String> cursosQueDicta; // Lista de cursos que dicta el docente
     
     // Constructor vacío
     public Docente() {
@@ -147,7 +149,6 @@ public class Docente implements Serializable {
         this.rolUsuario = rolUsuario;
     }
     
-    // ✅ NUEVO: Getter y Setter para objeto Usuario completo
     public Usuario getUsuario() {
         return usuario;
     }
@@ -158,6 +159,14 @@ public class Docente implements Serializable {
         if (usuario != null) {
             this.usuarioId = usuario.getId();
         }
+    }
+    
+    public List<String> getCursosQueDicta() {
+        return cursosQueDicta;
+    }
+    
+    public void setCursosQueDicta(List<String> cursosQueDicta) {
+        this.cursosQueDicta = cursosQueDicta;
     }
     
     // Método para obtener nombre completo
@@ -177,6 +186,7 @@ public class Docente implements Serializable {
                 ", usuarioId=" + usuarioId +
                 ", rolUsuario='" + rolUsuario + '\'' +
                 ", usuario=" + (usuario != null ? usuario.getUsername() : "null") +
+                ", cursosQueDicta=" + (cursosQueDicta != null ? cursosQueDicta.size() : 0) +
                 '}';
     }
     

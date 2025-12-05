@@ -108,6 +108,26 @@
                                 </div>
                                 
                                 <div class="col-md-6 mb-3">
+                                    <label for="gradoId" class="form-label">
+                                        <i class="bi bi-diagram-3"></i> Grado/Sección <span class="text-muted">(Opcional)</span>
+                                    </label>
+                                    <select class="form-select" 
+                                            id="gradoId" 
+                                            name="gradoId">
+                                        <option value="">Sin asignar</option>
+                                        <c:forEach items="${grados}" var="gra">
+                                            <option value="${gra.id}" 
+                                                    ${horario.gradoId == gra.id ? 'selected' : ''}>
+                                                ${gra.nombreCompleto}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                    <small class="text-muted">Asigna este horario a un grado específico</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
                                     <label for="dia" class="form-label">
                                         <i class="bi bi-calendar-day"></i> Día <span class="text-danger">*</span>
                                     </label>
@@ -161,6 +181,7 @@
                                     <li>El sistema validará automáticamente que no haya choques de horarios</li>
                                     <li>Un docente no puede tener dos clases al mismo tiempo</li>
                                     <li>Un aula no puede estar ocupada por dos clases simultáneamente</li>
+                                    <li>Un grado no puede tener dos clases al mismo tiempo</li>
                                     <li>La hora de inicio debe ser menor que la hora de fin</li>
                                 </ul>
                             </div>

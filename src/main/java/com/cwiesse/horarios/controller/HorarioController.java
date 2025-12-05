@@ -4,14 +4,17 @@ import com.cwiesse.horarios.dao.HorarioDao;
 import com.cwiesse.horarios.dao.DocenteDao;
 import com.cwiesse.horarios.dao.AulaDao;
 import com.cwiesse.horarios.dao.CursoDao;
+import com.cwiesse.horarios.dao.GradoDao;
 import com.cwiesse.horarios.dao.impl.HorarioDaoImpl;
 import com.cwiesse.horarios.dao.impl.DocenteDaoImpl;
 import com.cwiesse.horarios.dao.impl.AulaDaoImpl;
 import com.cwiesse.horarios.dao.impl.CursoDaoImpl;
+import com.cwiesse.horarios.dao.impl.GradoDaoImpl;
 import com.cwiesse.horarios.model.Horario;
 import com.cwiesse.horarios.model.Docente;
 import com.cwiesse.horarios.model.Aula;
 import com.cwiesse.horarios.model.Curso;
+import com.cwiesse.horarios.model.Grado;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +42,7 @@ public class HorarioController extends HttpServlet {
     private DocenteDao docenteDao;
     private AulaDao aulaDao;
     private CursoDao cursoDao;
+    private GradoDao gradoDao;
     
     @Override
     public void init() throws ServletException {
@@ -46,6 +50,7 @@ public class HorarioController extends HttpServlet {
         docenteDao = new DocenteDaoImpl();
         aulaDao = new AulaDaoImpl();
         cursoDao = new CursoDaoImpl();
+        gradoDao = new GradoDaoImpl();
         logger.info("HorarioController inicializado");
     }
     
@@ -158,6 +163,14 @@ public class HorarioController extends HttpServlet {
             Integer docenteId = Integer.parseInt(request.getParameter("docenteId"));
             Integer aulaId = Integer.parseInt(request.getParameter("aulaId"));
             Integer cursoId = Integer.parseInt(request.getParameter("cursoId"));
+            
+            // Grado es opcional
+            Integer gradoId = null;
+            String gradoIdStr = request.getParameter("gradoId");
+            if (gradoIdStr != null && !gradoIdStr.trim().isEmpty() && !"".equals(gradoIdStr)) {
+                gradoId = Integer.parseInt(gradoIdStr);
+            }
+            
             String diaStr = request.getParameter("dia");
             String horaInicioStr = request.getParameter("horaInicio");
             String horaFinStr = request.getParameter("horaFin");
@@ -197,11 +210,20 @@ public class HorarioController extends HttpServlet {
                 return;
             }
             
+            // Validar choque de grado (si se especificó)
+            if (gradoId != null && horarioDao.existeChoqueGrado(gradoId, diaStr, horaInicioStr, horaFinStr, null)) {
+                request.setAttribute("error", "El grado ya tiene una clase asignada en ese día y hora");
+                cargarDatosFormulario(request);
+                request.getRequestDispatcher("/WEB-INF/views/horarios/formulario.jsp").forward(request, response);
+                return;
+            }
+            
             // Crear horario
             Horario horario = new Horario();
             horario.setDocenteId(docenteId);
             horario.setAulaId(aulaId);
             horario.setCursoId(cursoId);
+            horario.setGradoId(gradoId);
             horario.setDia(Horario.Dia.valueOf(diaStr));
             horario.setHoraInicio(horaInicio);
             horario.setHoraFin(horaFin);
@@ -241,6 +263,14 @@ public class HorarioController extends HttpServlet {
             Integer docenteId = Integer.parseInt(request.getParameter("docenteId"));
             Integer aulaId = Integer.parseInt(request.getParameter("aulaId"));
             Integer cursoId = Integer.parseInt(request.getParameter("cursoId"));
+            
+            // Grado es opcional
+            Integer gradoId = null;
+            String gradoIdStr = request.getParameter("gradoId");
+            if (gradoIdStr != null && !gradoIdStr.trim().isEmpty() && !"".equals(gradoIdStr)) {
+                gradoId = Integer.parseInt(gradoIdStr);
+            }
+            
             String diaStr = request.getParameter("dia");
             String horaInicioStr = request.getParameter("horaInicio");
             String horaFinStr = request.getParameter("horaFin");
@@ -284,6 +314,18 @@ public class HorarioController extends HttpServlet {
                 return;
             }
             
+            // Validar choque de grado (si se especificó)
+            if (gradoId != null && horarioDao.existeChoqueGrado(gradoId, diaStr, horaInicioStr, horaFinStr, id)) {
+                request.setAttribute("error", "El grado ya tiene una clase asignada en ese día y hora");
+                Optional<Horario> horarioOpt = horarioDao.buscarPorId(id);
+                if (horarioOpt.isPresent()) {
+                    request.setAttribute("horario", horarioOpt.get());
+                }
+                cargarDatosFormulario(request);
+                request.getRequestDispatcher("/WEB-INF/views/horarios/formulario.jsp").forward(request, response);
+                return;
+            }
+            
             Optional<Horario> horarioOpt = horarioDao.buscarPorId(id);
             
             if (horarioOpt.isEmpty()) {
@@ -296,6 +338,7 @@ public class HorarioController extends HttpServlet {
             horario.setDocenteId(docenteId);
             horario.setAulaId(aulaId);
             horario.setCursoId(cursoId);
+            horario.setGradoId(gradoId);
             horario.setDia(Horario.Dia.valueOf(diaStr));
             horario.setHoraInicio(horaInicio);
             horario.setHoraFin(horaFin);
@@ -355,10 +398,12 @@ public class HorarioController extends HttpServlet {
         List<Docente> docentes = docenteDao.listarActivos();
         List<Aula> aulas = aulaDao.listarActivas();
         List<Curso> cursos = cursoDao.listarActivos();
+        List<Grado> grados = gradoDao.listarActivos();
         
         request.setAttribute("docentes", docentes);
         request.setAttribute("aulas", aulas);
         request.setAttribute("cursos", cursos);
+        request.setAttribute("grados", grados);
         request.setAttribute("dias", Horario.Dia.values());
     }
 }

@@ -7,7 +7,7 @@ import java.util.Objects;
 
 /**
  * Clase que representa una sesión de horario escolar.
- * Relaciona docente, aula, curso, día y horario.
+ * Relaciona docente, aula, curso, grado, día y horario.
  * 
  * @author Carlos Wiesse
  * @version 1.0
@@ -40,6 +40,7 @@ public class Horario implements Serializable {
     private Integer docenteId;
     private Integer aulaId;
     private Integer cursoId;
+    private Integer gradoId;  // NUEVO
     private Dia dia;
     private LocalTime horaInicio;
     private LocalTime horaFin;
@@ -49,31 +50,34 @@ public class Horario implements Serializable {
     private Docente docente;
     private Aula aula;
     private Curso curso;
+    private Grado grado;  // NUEVO
     
     // Constructor vacío
     public Horario() {
         this.fechaCreacion = LocalDateTime.now();
     }
     
-    // Constructor con IDs
-    public Horario(Integer docenteId, Integer aulaId, Integer cursoId, 
+    // Constructor con IDs (actualizado)
+    public Horario(Integer docenteId, Integer aulaId, Integer cursoId, Integer gradoId,
                    Dia dia, LocalTime horaInicio, LocalTime horaFin) {
         this();
         this.docenteId = docenteId;
         this.aulaId = aulaId;
         this.cursoId = cursoId;
+        this.gradoId = gradoId;
         this.dia = dia;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
     }
     
-    // Constructor completo
-    public Horario(Integer id, Integer docenteId, Integer aulaId, Integer cursoId,
+    // Constructor completo (actualizado)
+    public Horario(Integer id, Integer docenteId, Integer aulaId, Integer cursoId, Integer gradoId,
                    Dia dia, LocalTime horaInicio, LocalTime horaFin) {
         this.id = id;
         this.docenteId = docenteId;
         this.aulaId = aulaId;
         this.cursoId = cursoId;
+        this.gradoId = gradoId;
         this.dia = dia;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
@@ -111,6 +115,14 @@ public class Horario implements Serializable {
     
     public void setCursoId(Integer cursoId) {
         this.cursoId = cursoId;
+    }
+    
+    public Integer getGradoId() {
+        return gradoId;
+    }
+    
+    public void setGradoId(Integer gradoId) {
+        this.gradoId = gradoId;
     }
     
     public Dia getDia() {
@@ -169,6 +181,14 @@ public class Horario implements Serializable {
         this.curso = curso;
     }
     
+    public Grado getGrado() {
+        return grado;
+    }
+    
+    public void setGrado(Grado grado) {
+        this.grado = grado;
+    }
+    
     // Método para validar horario
     public boolean esHorarioValido() {
         return horaInicio != null && horaFin != null && horaInicio.isBefore(horaFin);
@@ -182,7 +202,7 @@ public class Horario implements Serializable {
         return 0;
     }
     
-    // Método toString
+    // Método toString (actualizado)
     @Override
     public String toString() {
         return "Horario{" +
@@ -190,6 +210,7 @@ public class Horario implements Serializable {
                 ", dia=" + dia +
                 ", horaInicio=" + horaInicio +
                 ", horaFin=" + horaFin +
+                ", gradoId=" + gradoId +
                 '}';
     }
     

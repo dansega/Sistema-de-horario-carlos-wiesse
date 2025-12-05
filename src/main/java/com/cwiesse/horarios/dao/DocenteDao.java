@@ -61,12 +61,22 @@ public interface DocenteDao {
      * Verifica si existe un docente con ese DNI
      */
     boolean existeDni(String dni);
+    
     /**
- * Verifica si existe un docente con acceso al sistema (usuario_id no nulo)
- */
-boolean tieneUsuario(Integer docenteId);
-/**
- * Verifica si el usuario del docente está activo
- */
-boolean usuarioActivo(Integer docenteId);
+     * Verifica si existe un docente con acceso al sistema (usuario_id no nulo)
+     */
+    boolean tieneUsuario(Integer docenteId);
+    
+    /**
+     * Verifica si el usuario del docente está activo
+     */
+    boolean usuarioActivo(Integer docenteId);
+    
+    /**
+     * Obtiene la lista de cursos únicos que dicta un docente
+     * 
+     * @param docenteId ID del docente
+     * @return Lista de nombres de cursos
+     */
+    List<String> obtenerCursosDelDocente(Integer docenteId);
 }

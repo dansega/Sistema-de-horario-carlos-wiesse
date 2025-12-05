@@ -38,6 +38,11 @@ public interface HorarioDao {
     List<Horario> listarPorCurso(Integer cursoId);
     
     /**
+     * Lista horarios de un grado específico
+     */
+    List<Horario> listarPorGrado(Integer gradoId);
+    
+    /**
      * Inserta un nuevo horario
      */
     boolean insertar(Horario horario);
@@ -63,4 +68,10 @@ public interface HorarioDao {
      * @return true si hay choque, false si no hay choque
      */
     boolean existeChoqueAula(Integer aulaId, String dia, String horaInicio, String horaFin, Integer horarioIdExcluir);
+    
+    /**
+     * Verifica si hay choque de horarios para un grado
+     * @return true si hay choque, false si no hay choque
+     */
+    boolean existeChoqueGrado(Integer gradoId, String dia, String horaInicio, String horaFin, Integer horarioIdExcluir);
 }

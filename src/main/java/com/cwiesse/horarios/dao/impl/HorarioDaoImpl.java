@@ -5,6 +5,7 @@ import com.cwiesse.horarios.model.Horario;
 import com.cwiesse.horarios.model.Docente;
 import com.cwiesse.horarios.model.Aula;
 import com.cwiesse.horarios.model.Curso;
+import com.cwiesse.horarios.model.Grado;
 import com.cwiesse.horarios.util.DBConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,11 +37,13 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre " +
+                    "c.nombre as curso_nombre, " +
+                    "g.nivel as grado_nivel, g.numero as grado_numero, g.seccion as grado_seccion " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
                     "JOIN curso c ON h.curso_id = c.id " +
+                    "LEFT JOIN grado g ON h.grado_id = g.id " +
                     "WHERE h.id = ?";
         
         Connection conn = null;
@@ -74,11 +77,13 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre " +
+                    "c.nombre as curso_nombre, " +
+                    "g.nivel as grado_nivel, g.numero as grado_numero, g.seccion as grado_seccion " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
                     "JOIN curso c ON h.curso_id = c.id " +
+                    "LEFT JOIN grado g ON h.grado_id = g.id " +
                     "ORDER BY h.dia, h.hora_inicio";
         
         List<Horario> horarios = new ArrayList<>();
@@ -110,11 +115,13 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre " +
+                    "c.nombre as curso_nombre, " +
+                    "g.nivel as grado_nivel, g.numero as grado_numero, g.seccion as grado_seccion " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
                     "JOIN curso c ON h.curso_id = c.id " +
+                    "LEFT JOIN grado g ON h.grado_id = g.id " +
                     "WHERE h.docente_id = ? " +
                     "ORDER BY h.dia, h.hora_inicio";
         
@@ -148,11 +155,13 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre " +
+                    "c.nombre as curso_nombre, " +
+                    "g.nivel as grado_nivel, g.numero as grado_numero, g.seccion as grado_seccion " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
                     "JOIN curso c ON h.curso_id = c.id " +
+                    "LEFT JOIN grado g ON h.grado_id = g.id " +
                     "WHERE h.aula_id = ? " +
                     "ORDER BY h.dia, h.hora_inicio";
         
@@ -186,11 +195,13 @@ public class HorarioDaoImpl implements HorarioDao {
                     "d.dni as docente_dni, d.nombre as docente_nombre, " +
                     "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
                     "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
-                    "c.nombre as curso_nombre " +
+                    "c.nombre as curso_nombre, " +
+                    "g.nivel as grado_nivel, g.numero as grado_numero, g.seccion as grado_seccion " +
                     "FROM horario h " +
                     "JOIN docente d ON h.docente_id = d.id " +
                     "JOIN aula a ON h.aula_id = a.id " +
                     "JOIN curso c ON h.curso_id = c.id " +
+                    "LEFT JOIN grado g ON h.grado_id = g.id " +
                     "WHERE h.curso_id = ? " +
                     "ORDER BY h.dia, h.hora_inicio";
         
@@ -219,9 +230,49 @@ public class HorarioDaoImpl implements HorarioDao {
     }
     
     @Override
+    public List<Horario> listarPorGrado(Integer gradoId) {
+        String sql = "SELECT h.*, " +
+                    "d.dni as docente_dni, d.nombre as docente_nombre, " +
+                    "d.apellido_paterno as docente_ap_paterno, d.apellido_materno as docente_ap_materno, " +
+                    "a.codigo as aula_codigo, a.nombre as aula_nombre, a.capacidad as aula_capacidad, " +
+                    "c.nombre as curso_nombre, " +
+                    "g.nivel as grado_nivel, g.numero as grado_numero, g.seccion as grado_seccion " +
+                    "FROM horario h " +
+                    "JOIN docente d ON h.docente_id = d.id " +
+                    "JOIN aula a ON h.aula_id = a.id " +
+                    "JOIN curso c ON h.curso_id = c.id " +
+                    "LEFT JOIN grado g ON h.grado_id = g.id " +
+                    "WHERE h.grado_id = ? " +
+                    "ORDER BY h.dia, h.hora_inicio";
+        
+        List<Horario> horarios = new ArrayList<>();
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, gradoId);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                horarios.add(mapResultSetToHorario(rs));
+            }
+            
+            logger.debug("Se encontraron {} horarios para grado {}", horarios.size(), gradoId);
+            
+        } catch (SQLException e) {
+            logger.error("Error al listar horarios por grado: {}", e.getMessage());
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+        
+        return horarios;
+    }
+    
+    @Override
     public boolean insertar(Horario horario) {
-        String sql = "INSERT INTO horario (docente_id, aula_id, curso_id, dia, hora_inicio, hora_fin) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO horario (docente_id, aula_id, curso_id, grado_id, dia, hora_inicio, hora_fin) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         
         try {
@@ -231,9 +282,17 @@ public class HorarioDaoImpl implements HorarioDao {
             stmt.setInt(1, horario.getDocenteId());
             stmt.setInt(2, horario.getAulaId());
             stmt.setInt(3, horario.getCursoId());
-            stmt.setString(4, horario.getDia().name());
-            stmt.setTime(5, Time.valueOf(horario.getHoraInicio()));
-            stmt.setTime(6, Time.valueOf(horario.getHoraFin()));
+            
+            // grado_id puede ser NULL
+            if (horario.getGradoId() != null) {
+                stmt.setInt(4, horario.getGradoId());
+            } else {
+                stmt.setNull(4, Types.INTEGER);
+            }
+            
+            stmt.setString(5, horario.getDia().name());
+            stmt.setTime(6, Time.valueOf(horario.getHoraInicio()));
+            stmt.setTime(7, Time.valueOf(horario.getHoraFin()));
             
             int filasAfectadas = stmt.executeUpdate();
             
@@ -258,7 +317,7 @@ public class HorarioDaoImpl implements HorarioDao {
     
     @Override
     public boolean actualizar(Horario horario) {
-        String sql = "UPDATE horario SET docente_id = ?, aula_id = ?, curso_id = ?, " +
+        String sql = "UPDATE horario SET docente_id = ?, aula_id = ?, curso_id = ?, grado_id = ?, " +
                      "dia = ?, hora_inicio = ?, hora_fin = ? WHERE id = ?";
         Connection conn = null;
         
@@ -269,10 +328,18 @@ public class HorarioDaoImpl implements HorarioDao {
             stmt.setInt(1, horario.getDocenteId());
             stmt.setInt(2, horario.getAulaId());
             stmt.setInt(3, horario.getCursoId());
-            stmt.setString(4, horario.getDia().name());
-            stmt.setTime(5, Time.valueOf(horario.getHoraInicio()));
-            stmt.setTime(6, Time.valueOf(horario.getHoraFin()));
-            stmt.setInt(7, horario.getId());
+            
+            // grado_id puede ser NULL
+            if (horario.getGradoId() != null) {
+                stmt.setInt(4, horario.getGradoId());
+            } else {
+                stmt.setNull(4, Types.INTEGER);
+            }
+            
+            stmt.setString(5, horario.getDia().name());
+            stmt.setTime(6, Time.valueOf(horario.getHoraInicio()));
+            stmt.setTime(7, Time.valueOf(horario.getHoraFin()));
+            stmt.setInt(8, horario.getId());
             
             int filasAfectadas = stmt.executeUpdate();
             
@@ -422,6 +489,58 @@ public class HorarioDaoImpl implements HorarioDao {
         }
     }
     
+    @Override
+    public boolean existeChoqueGrado(Integer gradoId, String dia, String horaInicio, String horaFin, Integer horarioIdExcluir) {
+        String sql = "SELECT COUNT(*) FROM horario " +
+                     "WHERE grado_id = ? AND dia = ? " +
+                     "AND ((hora_inicio < ? AND hora_fin > ?) OR " +
+                     "     (hora_inicio < ? AND hora_fin > ?) OR " +
+                     "     (hora_inicio >= ? AND hora_fin <= ?))";
+        
+        if (horarioIdExcluir != null) {
+            sql += " AND id != ?";
+        }
+        
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            
+            stmt.setInt(1, gradoId);
+            stmt.setString(2, dia);
+            stmt.setString(3, horaFin);
+            stmt.setString(4, horaInicio);
+            stmt.setString(5, horaFin);
+            stmt.setString(6, horaFin);
+            stmt.setString(7, horaInicio);
+            stmt.setString(8, horaFin);
+            
+            if (horarioIdExcluir != null) {
+                stmt.setInt(9, horarioIdExcluir);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                boolean hayChoque = rs.getInt(1) > 0;
+                if (hayChoque) {
+                    logger.warn("Choque detectado para grado {} en {} {}-{}", 
+                               gradoId, dia, horaInicio, horaFin);
+                }
+                return hayChoque;
+            }
+            
+            return false;
+            
+        } catch (SQLException e) {
+            logger.error("Error al verificar choque de grado: {}", e.getMessage());
+            return true; // Por seguridad, asumir que hay choque
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
+    
     /**
      * Mapea un ResultSet a un objeto Horario completo con sus relaciones
      */
@@ -433,6 +552,12 @@ public class HorarioDaoImpl implements HorarioDao {
         horario.setDocenteId(rs.getInt("docente_id"));
         horario.setAulaId(rs.getInt("aula_id"));
         horario.setCursoId(rs.getInt("curso_id"));
+        
+        // grado_id puede ser NULL
+        int gradoId = rs.getInt("grado_id");
+        if (!rs.wasNull()) {
+            horario.setGradoId(gradoId);
+        }
         
         String diaStr = rs.getString("dia");
         horario.setDia(Horario.Dia.valueOf(diaStr));
@@ -456,11 +581,22 @@ public class HorarioDaoImpl implements HorarioDao {
         aula.setCapacidad(rs.getInt("aula_capacidad"));
         horario.setAula(aula);
         
-        // Crear objeto Curso relacionado (SIMPLIFICADO)
+        // Crear objeto Curso relacionado
         Curso curso = new Curso();
         curso.setId(rs.getInt("curso_id"));
         curso.setNombre(rs.getString("curso_nombre"));
         horario.setCurso(curso);
+        
+        // Crear objeto Grado relacionado (puede ser NULL)
+        String gradoNivel = rs.getString("grado_nivel");
+        if (gradoNivel != null) {
+            Grado grado = new Grado();
+            grado.setId(horario.getGradoId());
+            grado.setNivel(Grado.Nivel.valueOf(gradoNivel));
+            grado.setNumero(rs.getInt("grado_numero"));
+            grado.setSeccion(rs.getString("grado_seccion"));
+            horario.setGrado(grado);
+        }
         
         return horario;
     }

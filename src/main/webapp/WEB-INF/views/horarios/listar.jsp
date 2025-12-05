@@ -69,6 +69,7 @@
                                 <th>Horario</th>
                                 <th>Docente</th>
                                 <th>Curso</th>
+                                <th>Grado</th>
                                 <th>Aula</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
@@ -77,7 +78,7 @@
                             <c:forEach items="${horarios}" var="horario">
                                 <tr>
                                     <td>
-                                        <span class="badge bg-info">${horario.dia.nombre}</span>
+                                        <span class="badge bg-info text-dark">${horario.dia.nombre}</span>
                                     </td>
                                     <td>
                                         <i class="bi bi-clock"></i>
@@ -92,9 +93,19 @@
                                         <strong>${horario.curso.nombre}</strong>
                                     </td>
                                     <td>
+                                        <c:choose>
+                                            <c:when test="${not empty horario.grado}">
+                                                ${horario.grado.nombreCorto}
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-muted fst-italic">Sin asignar</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
                                         <span class="badge bg-secondary">${horario.aula.codigo}</span>
                                         <c:if test="${not empty horario.aula.nombre}">
-                                            <br><small>${horario.aula.nombre}</small>
+                                            <br><small class="text-muted">${horario.aula.nombre}</small>
                                         </c:if>
                                     </td>
                                     <td class="text-center">
@@ -112,7 +123,7 @@
                             
                             <c:if test="${empty horarios}">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">
+                                    <td colspan="7" class="text-center text-muted">
                                         No hay horarios registrados
                                     </td>
                                 </tr>

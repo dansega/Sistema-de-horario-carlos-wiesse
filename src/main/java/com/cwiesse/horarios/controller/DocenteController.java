@@ -102,10 +102,16 @@ public class DocenteController extends HttpServlet {
         
         List<Docente> docentes = docenteDao.listarTodos();
         
+        // Cargar los cursos de cada docente
+        for (Docente docente : docentes) {
+            List<String> cursos = docenteDao.obtenerCursosDelDocente(docente.getId());
+            docente.setCursosQueDicta(cursos);
+        }
+        
         request.setAttribute("docentes", docentes);
         request.setAttribute("totalDocentes", docentes.size());
         
-        logger.debug("Listando {} docentes", docentes.size());
+        logger.debug("Listando {} docentes con sus cursos", docentes.size());
         
         request.getRequestDispatcher("/WEB-INF/views/docentes/listar.jsp").forward(request, response);
     }
@@ -456,11 +462,37 @@ public class DocenteController extends HttpServlet {
         try {
             Integer id = Integer.parseInt(idStr);
             
-            boolean eliminado = docenteDao.eliminar(id);
+            // Buscar el docente para obtener su usuario_id
+            Optional<Docente> docenteOpt = docenteDao.buscarPorId(id);
             
-            if (eliminado) {
+            if (docenteOpt.isEmpty()) {
+                request.getSession().setAttribute("error", "Docente no encontrado");
+                response.sendRedirect(request.getContextPath() + "/docentes?action=listar");
+                return;
+            }
+            
+            Docente docente = docenteOpt.get();
+            Integer usuarioId = docente.getUsuarioId();
+            
+            // Primero eliminar el docente
+            boolean docenteEliminado = docenteDao.eliminar(id);
+            
+            if (docenteEliminado) {
                 logger.info("Docente eliminado con ID: {}", id);
-                request.getSession().setAttribute("mensaje", "Docente eliminado exitosamente");
+                
+                // Si tenía usuario asociado, eliminarlo también
+                if (usuarioId != null) {
+                    boolean usuarioEliminado = usuarioDao.eliminar(usuarioId);
+                    if (usuarioEliminado) {
+                        logger.info("Usuario eliminado completamente con ID: {}", usuarioId);
+                        request.getSession().setAttribute("mensaje", "Docente y su usuario eliminados completamente. El usuario puede ser reutilizado.");
+                    } else {
+                        logger.warn("No se pudo eliminar el usuario con ID: {}", usuarioId);
+                        request.getSession().setAttribute("mensaje", "Docente eliminado, pero hubo un problema al eliminar su usuario");
+                    }
+                } else {
+                    request.getSession().setAttribute("mensaje", "Docente eliminado exitosamente");
+                }
             } else {
                 request.getSession().setAttribute("error", "Error al eliminar el docente");
             }

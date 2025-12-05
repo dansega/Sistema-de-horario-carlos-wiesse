@@ -68,7 +68,7 @@ public class DocenteDashboardController extends HttpServlet {
             
             if (docenteOpt.isEmpty()) {
                 logger.error("No se encontró docente asociado al usuario: {}", usuario.getUsername());
-                request.setAttribute("error", "No se encontró información del docente");
+                request.setAttribute("error", "No se encontró información del docente. Por favor contacte al administrador.");
                 request.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(request, response);
                 return;
             }
@@ -80,17 +80,22 @@ public class DocenteDashboardController extends HttpServlet {
             List<Horario> horarios = horarioDao.listarPorDocente(docente.getId());
             logger.debug("Se encontraron {} horarios para el docente", horarios.size());
             
+            // Obtener los cursos que dicta el docente
+            List<String> cursos = docenteDao.obtenerCursosDelDocente(docente.getId());
+            docente.setCursosQueDicta(cursos);
+            logger.debug("Docente dicta {} cursos diferentes", cursos.size());
+            
             // Pasar datos a la vista
             request.setAttribute("docente", docente);
             request.setAttribute("horarios", horarios);
             request.setAttribute("totalHorarios", horarios.size());
             
             // Mostrar dashboard del docente
-            request.getRequestDispatcher("/WEB-INF/views/docente/dashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/docente-dashboard.jsp").forward(request, response);
             
         } catch (Exception e) {
             logger.error("Error al cargar dashboard del docente: {}", e.getMessage(), e);
-            request.setAttribute("error", "Error al cargar el dashboard");
+            request.setAttribute("error", "Error al cargar el dashboard: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(request, response);
         }
     }

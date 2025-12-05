@@ -390,6 +390,38 @@ public class DocenteDaoImpl implements DocenteDao {
         }
     }
     
+    @Override
+    public List<String> obtenerCursosDelDocente(Integer docenteId) {
+        String sql = "SELECT DISTINCT c.nombre " +
+                    "FROM horario h " +
+                    "JOIN curso c ON h.curso_id = c.id " +
+                    "WHERE h.docente_id = ? " +
+                    "ORDER BY c.nombre";
+        
+        List<String> cursos = new ArrayList<>();
+        Connection conn = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, docenteId);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                cursos.add(rs.getString("nombre"));
+            }
+            
+            logger.debug("Docente {} dicta {} cursos", docenteId, cursos.size());
+            
+        } catch (SQLException e) {
+            logger.error("Error al obtener cursos del docente: {}", e.getMessage());
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+        
+        return cursos;
+    }
+    
     /**
      * Mapea un ResultSet a un objeto Docente (sin rol)
      */
